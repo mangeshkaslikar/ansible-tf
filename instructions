@@ -10,4 +10,8 @@ dcos cluster setup <Your DCOS Master IP here>
 
 5. Execute like so : ansible-playbook -i hosts tasks/deploy_tf.yaml 
 
-6. Check DCOS UI for service coming up.   
+6. Check DCOS UI for service coming up.  
+
+7. For deploying another cluster, change values of the service_account and the service_id variables and run that playbook again. Check DCOS UI for second cluster coming up. 
+
+ 
