@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   vars:
-    dcos_cluster: https://34.214.209.181/
+    dcos_cluster: https://<Insert Your DC/OS Master IP Here>
     app_grp: dev
     seal_id: 102188-jpgbds
     #tensorflow_cluster_identifier: tf-cluster1
