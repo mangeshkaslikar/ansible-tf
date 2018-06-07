@@ -1,8 +1,8 @@
 {
   "service": {
-    "name": "/dev/102188-jpgbds/tf-cluster1/mnist",
-    "service_account": "dev_tensorflow",
-    "service_account_secret": "dev/102188-jpgbds/tf-cluster1/tensorflow-secret",
+    "name": "/dev/102188-jpgbds/mnist3",
+    "service_account": "dev_tensorflow3",
+    "service_account_secret": "dev/102188-jpgbds/dev_tensorflow3-secret",
     "user": "nobody",
     "virtual_network_enabled": false,
     "virtual_network_name": "dcos",

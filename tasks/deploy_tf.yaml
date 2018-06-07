@@ -1,0 +1,64 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    dcos_cluster: https://34.214.209.181/
+    app_grp: dev
+    seal_id: 102188-jpgbds
+    #tensorflow_cluster_identifier: tf-cluster1
+    service_account: dev_tensorflow3
+    service_id: mnist3
+    
+  tasks:
+  - name: Do a DCOS config show 
+    command: dcos config show
+
+  - name: Do a DCOS Enterprise CLI setup 
+    command: dcos package install dcos-enterprise-cli --yes
+
+  - name: Create a private and public keypair for the service, in this case {{ app_grp }}_{{ seal_id }}
+    command: dcos security org service-accounts keypair {{ app_grp }}_{{ seal_id }}-private.pem {{ app_grp }}_{{ seal_id }}-public.pem
+
+  - name: Create a new service account using the previously created key
+    command: dcos security org service-accounts create -p {{ app_grp }}_{{ seal_id }}-public.pem -d "For {{ service_account }}  service account" {{ service_account }}
+
+  - name: Create a secret to hold the private key for strict
+    command: dcos security secrets create-sa-secret --strict {{ app_grp }}_{{ seal_id }}-private.pem {{ service_account }} {{ app_grp }}/{{ seal_id }}/{{ service_account }}-secret
+
+# Permissions
+  - name: Grant user nobody user to create
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:task:user:nobody create 
+
+  - name: Grant Permission to create tasks in that namespace
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:task:app_id:/{{ app_grp }}/{{ seal_id }} create
+
+  - name: Allow dev_tensorflow to register with Mesos and consume resources from the {{ service_account }} role
+    command: dcos security org users grant {{ service_account }}  dcos:mesos:master:framework:role:{{ app_grp }}__{{ seal_id }}__{{ service_id }}-role create
+
+  - name: Allow {{ app_grp }}__{{ seal_id }}__{{ service_id }}-role to reserve resources
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:reservation:role:{{ app_grp }}__{{ seal_id }}__{{ service_id }}-role create 
+
+  - name: Allow {{ service_account }} principal to reserve resources
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:reservation:principal:{{ service_account }} create
+
+  - name: Allow {{ service_account }} principal to delete resources
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:reservation:principal:{{ service_account }} delete
+
+  - name: Allow {{ app_grp }}__{{ seal_id }}__{{ service_id }}-role to access volumes
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:volume:role:{{ app_grp }}__{{ seal_id }}__{{ service_id }}-role create
+
+  - name: Allow {{ service_account }}  principal to access volumes
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:volume:principal:{{ service_account }} create
+
+  - name: Allow {{ service_account }}  principal to delete volumes
+    command: dcos security org users grant {{ service_account }} dcos:mesos:master:volume:principal:{{ service_account }} delete
+
+  - name: Create your options.json 
+    template: 
+      src: ../templates/options_tf.j2
+      dest: ../output/options_tf.json 
+  
+  - name: Deploy TF Package
+    command: dcos package install beta-tensorflow --options=../output/options_tf.json --yes
+
+

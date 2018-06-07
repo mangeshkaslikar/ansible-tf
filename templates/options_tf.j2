@@ -1,8 +1,8 @@
 {
   "service": {
-    "name": "/{{ app_grp }}/{{ seal_id }}/{{ tensorflow_cluster_identifier }}/{{ job_name }}",
-    "service_account": "{{ app_grp }}_{{ package }}",
-    "service_account_secret": "{{ app_grp }}/{{ seal_id }}/{{ tensorflow_cluster_identifier }}/{{ package }}-secret",
+    "name": "/{{ app_grp }}/{{ seal_id }}/{{ service_id }}",
+    "service_account": "{{ service_account }}",
+    "service_account_secret": "{{ app_grp }}/{{ seal_id }}/{{ service_account }}-secret",
     "user": "nobody",
     "virtual_network_enabled": false,
     "virtual_network_name": "dcos",
