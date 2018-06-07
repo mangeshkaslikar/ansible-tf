@@ -1,0 +1,13 @@
+1. Before using this Setup your DCOS CLI with the cluster you are using like so : 
+
+dcos cluster setup <Your DCOS Master IP here> 
+
+2. Enter your DCOS Master IP in the tasks/deploy_tf.yaml file under the dcos_cluster variable. 
+
+3. Setup your namespace by giving apt values to the app_grp and seal_id variables.
+
+4. Set the name of your service account and the name of your job with the service_account and the service_id respectively.
+
+5. Execute like so : ansible-playbook -i hosts tasks/deploy_tf.yaml 
+
+6. Check DCOS UI for service coming up.   
